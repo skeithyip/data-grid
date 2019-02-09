@@ -9,7 +9,7 @@ This is a Data Grid built using
 [Redux](https://github.com/reduxjs/redux)
 ___
 
-![alt text](https://i.imgur.com/CeVGMip.gif "Data Grid")
+![alt text](https://i.imgur.com/Jc8Jtie.gif "Data Grid")
 
 ### Features
 ___
