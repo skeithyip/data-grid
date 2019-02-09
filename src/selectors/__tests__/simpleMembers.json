@@ -1,0 +1,26 @@
+{
+  "5c47e15a48546954e43c4b2c": {
+    "id": "5c47e15a48546954e43c4b2c",
+    "name": "member 0",
+    "shortname": "o0",
+    "memberType": "memberTypeA"
+  },
+  "5c47e15ab5ea0b3e8cf1ff09": {
+    "id": "5c47e15ab5ea0b3e8cf1ff09",
+    "name": "member 1",
+    "shortname": "o1",
+    "memberType": "memberTypeB"
+  },
+  "5c47e15a56de3d7daa4d0e29": {
+    "id": "5c47e15a56de3d7daa4d0e29",
+    "name": "member 2",
+    "shortname": "o2",
+    "memberType": "memberTypeC"
+  },
+  "5c47e15a9e843e2ae418f237": {
+    "id": "5c47e15a9e843e2ae418f237",
+    "name": "member 3",
+    "shortname": "o3",
+    "memberType": "memberTypeA"
+  }
+}

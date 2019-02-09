@@ -1,0 +1,127 @@
+.GridRow {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+}
+.GridColumn {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+}
+.LeftSideGridContainer {
+  flex: 0 0 75px;
+  z-index: 10;
+}
+
+.LeftSideGrid {
+  overflow: hidden !important;
+}
+.HeaderGrid {
+  width: 100%;
+  overflow: hidden !important;
+}
+.BodyGrid {
+  width: 100%;
+}
+
+.evenRow {
+  display: block;
+}
+.oddRow {
+  background-color: rgba(0, 0, 0, .1);
+}
+
+.cell,
+.leftCell {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 0 .5em;
+  border-top: 1px solid rgba(0,0,0,0.02);
+  border-right: 1px solid rgba(0,0,0,0.02);
+  background-color: white;
+  align-items: flex-start;
+}
+
+.headerCell {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  text-align: center;
+  padding: 0 .5em;
+  border-top: 1px solid rgba(0,0,0,0.02);
+  border-right: 1px solid rgba(0,0,0,0.02);
+  background-color: white;
+}
+
+.hovered {
+  background-color: rgba(0,0,0,0.03);
+}
+
+.groupHeaderCell {
+  align-items: flex-start;
+
+}
+
+.collapse {
+  transform: rotate(-90deg);
+  transition: transform 0.4s ease;
+}
+
+.expanded {
+  transition: transform 0.4s ease;
+}
+
+.DragHandle {
+  flex: 0 0 16px;
+  z-index: 2;
+  cursor: col-resize;
+  color: #0085ff;
+}
+.DragHandle:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.DragHandleActive,
+.DragHandleActive:hover {
+  color: #0b6fcc;
+  z-index: 3;
+}
+
+.DragHandleIcon {
+  flex: 0 0 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+@keyframes loading {
+  0% { background-position: -268px 0 }
+  100% { background-position: 268px 0 }
+}
+
+.placeholder {
+  height: 10px;
+  content: "";
+  display: block;
+  background: linear-gradient(to right, #eeeeee 10%, #dddddd 18%, #eeeeee 33%);;
+  background-size: 400px 54px;
+  animation: loading 1.25s linear infinite forwards;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0 25px;
+  background-color: #fff;
+  border-bottom: 1px solid #e0e0e0;
+}
