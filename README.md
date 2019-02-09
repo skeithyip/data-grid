@@ -46,9 +46,9 @@ The selector creates the row indices plus matching row to data index for the que
 ### Note
 ___
 
-This project is not meant to be used as dependency. This is just a demonstration of one way to use React Virtualized's Infinite Scroll together with data grouping. 
+This project is not meant to be used as dependency. This is just a demonstration of combining React Virtualized's Infinite Scroll with data grouping. 
 
-Please feel free to look at (or even copy) the soucre code. Unit tests have also been provided to help understand the flow.
+Please feel free to look at (or even copy) the source code. Unit tests have also been provided to help understand the flow.
 
 ### Limitations
 ___
