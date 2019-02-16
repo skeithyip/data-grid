@@ -10,8 +10,14 @@ class DataGridContainer extends React.Component {
     // groupBy: [],
     groupBy: ['memberType'],
     // columns: ['id', 'name', 'shortname', 'memberType'],
-    columns: ['memberType', 'id', 'name', 'shortname'],
-    columnWidths: { id: 400, name: 200, shortname: 200, memberType: 150 }
+    columns: [
+      { id: 'memberType', label: 'Member Type', width: 150 },
+      { id: 'id', label: 'ID', width: 400 },
+      { id: 'name', label: 'Member Name', width: 200 },
+      { id: 'shortname', label: 'S_Name', width: 200 }
+      //{ id: 'fieldA', label: 'Field_A', width: 200 },
+      //{ id: 'fieldB', label: 'Field_B', width: 200 }
+    ]
   };
 
   onRowClick = id => console.log(id);

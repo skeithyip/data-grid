@@ -17,6 +17,12 @@ describe('MemberDataCell', () => {
 
     expect(wrapper.text()).toBe(value);
   });
+
+  it('should return null', () => {
+    const wrapper = shallow(<MemberDataCell />);
+
+    expect(wrapper.isEmptyRender()).toBeTruthy();
+  });
 });
 
 describe('Connected', () => {

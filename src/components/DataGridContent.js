@@ -7,26 +7,42 @@ import styles from './ScrollSync.module.css';
 import DataGridCell from './DataGridCell';
 
 class DataGridContent extends React.Component {
+  state = {};
   infLoaderRef = React.createRef();
   gridRef = React.createRef();
 
-  componentDidUpdate(prevProps) {
-    if (this.props.rowCount !== prevProps.rowCount) {
-      this.resetLoadMoreRowsCache();
+  getSnapshotBeforeUpdate(prevProps) {
+    if (prevProps.rowCount !== this.props.rowCount) {
+      // reset cache on row count diff
+      // this flag will become false if loadMoreRows is called
+      this.toResetCache = true;
     }
+    return null;
   }
 
-  resetLoadMoreRowsCache = () => {
-    if (this.toResetCache) {
+  componentDidUpdate(prevProps, prevState) {
+    if (this.toResetCache && this.props.rowCount !== prevProps.rowCount) {
+      // console.log('componentDidUpdate rowCount');
       // when range is visible, loadMoreRow will not be triggered
       // reset cache to force loadMoreRow
       this.infLoaderRef.current.resetLoadMoreRowsCache(true);
     }
-    // if toResetCache is false, means it has been called. so no reset needed
 
-    // set toResetCache flag to true everytime rowCount is updated
-    // this ensures cache will be reset next time unless loadMoreRows is triggered
-    this.toResetCache = true;
+    if (this.state.hoveredRowIndex !== prevState.hoveredRowIndex) {
+      this.gridRef.current.forceUpdate();
+    }
+
+    if (this.props.columnWidths !== prevProps.columnWidths) {
+      this.gridRef.current.recomputeGridSize();
+    }
+  }
+
+  onMouseOver = hoveredRowIndex => {
+    this.setState(() => ({ hoveredRowIndex }));
+  };
+
+  onMouseOut = () => {
+    this.setState(() => ({ hoveredRowIndex: undefined }));
   };
 
   isRowLoaded = ({ index }) => {
@@ -40,7 +56,8 @@ class DataGridContent extends React.Component {
   loadMoreRows = ({ startIndex, stopIndex }) => {
     // console.log('loadMoreRows');
     const { getRows, groupBy, expanded } = this.props;
-    // turn off reset cache
+
+    // disable reset of cache
     this.toResetCache = false;
 
     this.props.loadMoreRows({
@@ -64,7 +81,7 @@ class DataGridContent extends React.Component {
 
   columnWidth = ({ index }) => {
     const { totalWidth, columnWidths, columns } = this.props;
-    const column = columns[index];
+    const { id: column } = columns[index];
     return columnWidths[column] * totalWidth;
   };
 
@@ -83,6 +100,7 @@ class DataGridContent extends React.Component {
       onRowClick,
       getRows
     } = this.props;
+    const { hoveredRowIndex } = this.state;
 
     return (
       <DataGridCell
@@ -95,6 +113,8 @@ class DataGridContent extends React.Component {
         expanded={expanded}
         onGroupRowClick={onGroupRowClick}
         rowComponent={rowComponent}
+        onMouseOver={this.onMouseOver}
+        hovered={rowIndex === hoveredRowIndex}
         onRowClick={onRowClick}
         getRows={getRows}
       />
@@ -123,7 +143,7 @@ class DataGridContent extends React.Component {
           this.onRowsRendered = onRowsRendered;
 
           return (
-            <div style={{ height, width }}>
+            <div style={{ height, width }} onMouseOut={this.onMouseOut}>
               <Grid
                 className={styles.BodyGrid}
                 columnWidth={this.columnWidth}
@@ -149,7 +169,7 @@ class DataGridContent extends React.Component {
 
 const mapStateToProps = (state, props) => {
   const { getRows } = props;
-  const [rows, , loadedMap] = getRows(state, props);
+  const [rows, loadedMap] = getRows(state, props);
 
   return { rowCount: rows.length, loadedMap };
 };

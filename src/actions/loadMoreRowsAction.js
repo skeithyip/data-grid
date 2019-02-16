@@ -9,7 +9,7 @@ const fetchForDataGrid = ({
   expanded
 }) => (dispatch, getState) => {
   // rows = UI display
-  const [, dataIndex, loaded] = getRows(getState(), { groupBy, expanded });
+  const [, loaded, dataIndex] = getRows(getState(), { groupBy, expanded });
   if (!!loaded[startIndex] && !!loaded[stopIndex]) {
     // skip, caused by resetting cache + reloading of visible range
     console.log('skipped');

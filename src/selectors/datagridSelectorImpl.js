@@ -1,6 +1,18 @@
 import { createSelector } from 'reselect';
 import { groupBy } from 'lodash';
 
+const nonGroup = (totalSize, ids, loadedMap) => {
+  const rows = [];
+  const loaded = [];
+
+  for (let i = 0; i < totalSize; i++) {
+    rows[i] = ids[i];
+    loaded[i] = loadedMap[i];
+  }
+
+  return [rows, loaded];
+};
+
 const getSize = list => {
   return list.reduce((acc, { size }) => {
     return (acc += size);
@@ -27,7 +39,8 @@ const impl = (ids, loadedMap, list, groupByProp, expanded) => {
     return Object.entries(group).reduce((acc, [value, subList]) => {
       const newPath = !!path ? path.concat('.', value) : value;
       // place group header
-      acc.push({ key: groupName, value, path: newPath });
+      const groupSize = getSize(subList);
+      acc.push({ key: groupName, value, path: newPath, size: groupSize });
       const rowIndex = headerCount + expandedSize;
       loaded[rowIndex] = 'LOADED';
 
@@ -72,7 +85,7 @@ const impl = (ids, loadedMap, list, groupByProp, expanded) => {
   const flatten = flattenGroup(list, groupByProp, expanded);
   // console.log({ dataMap, loaded });
   // console.log({ loadedMap });
-  return [flatten, dataMap, loaded];
+  return [flatten, loaded, dataMap];
 };
 
 const getIds = state => state.datagrid.members.ids;
@@ -92,20 +105,11 @@ const getRows = createSelector(
   ],
   (ids, totalSize, groups, groupBy = [], expanded = [], loadedMap = {}) => {
     if (groupBy.length === 0) {
-      return [...Array(totalSize)].reduce(
-        (acc, _, index) => {
-          const [rows, dataIndex] = acc;
-          rows[index] = ids[index];
-          dataIndex[index] = index;
-          return acc;
-        },
-        [[], [], {}]
-      );
+      return nonGroup(totalSize, ids, loadedMap);
     }
 
     const result = impl(ids, loadedMap, groups, groupBy, expanded);
-    // console.log(result);
-    // return flattenGroup(groups, groupBy, expanded /*ids , loadedMap*/);
+    // [rows, loaded, dataIndex]
     return result;
   }
 );

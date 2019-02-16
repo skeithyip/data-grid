@@ -29,32 +29,36 @@ class DataGridCell extends React.Component {
       expanded = []
     } = this.props;
 
-    const column = columns[columnIndex];
+    const column = columns[columnIndex].id;
+    const hoveredClass = hovered ? styles.hovered : '';
 
     if (typeof row === 'string') {
       // id found
 
       const className = classNames(
         styles.cell,
-        hovered ? styles.hovered : '',
+        hoveredClass,
         typeof onRowClick === 'undefined' ? '' : 'pointer'
       );
       // hide grouped by columns
       // const showColumn = !groupBy.includes(column);
 
       return (
-        <div className={className} style={style} onClick={this.onRowClick}>
+        <div
+          className={className}
+          style={style}
+          onMouseOver={this.onMouseOver}
+          onClick={this.onRowClick}>
           <RowComponent id={row} field={column} />
         </div>
       );
     }
 
     if (typeof row === 'undefined') {
+      const className = classNames(styles.cell, hoveredClass);
       return (
-        <div className={styles.cell} style={style}>
-          {columnIndex === 0 && (
-            <div className={styles.placeholder} style={{ width: '130px' }} />
-          )}
+        <div className={className} style={style} onMouseOver={this.onMouseOver}>
+          {columnIndex === 0 && <div className={styles.placeholder} />}
         </div>
       );
     }

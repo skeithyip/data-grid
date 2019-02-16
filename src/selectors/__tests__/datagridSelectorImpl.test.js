@@ -20,7 +20,18 @@ describe('getRows', () => {
       undefined,
       undefined
     ]);
-    expect(dataIndex).toEqual([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
+    expect(dataIndex).toEqual([
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined
+    ]);
   });
 
   it('should return array of formatted groups when props contains groupBy', () => {
@@ -37,11 +48,26 @@ describe('getRows', () => {
 
     expect(rows).toHaveLength(3);
     expect(rows).toEqual([
-      { key: 'memberType', value: 'memberTypeA', path: 'memberTypeA' },
-      { key: 'memberType', value: 'memberTypeB', path: 'memberTypeB' },
-      { key: 'memberType', value: 'memberTypeC', path: 'memberTypeC' }
+      {
+        key: 'memberType',
+        value: 'memberTypeA',
+        path: 'memberTypeA',
+        size: 100
+      },
+      {
+        key: 'memberType',
+        value: 'memberTypeB',
+        path: 'memberTypeB',
+        size: 200
+      },
+      {
+        key: 'memberType',
+        value: 'memberTypeC',
+        path: 'memberTypeC',
+        size: 300
+      }
     ]);
-    expect(dataIndex).toEqual({});
+    expect(dataIndex).toEqual(['LOADED', 'LOADED', 'LOADED']);
   });
 
   it('should return array of formatted groups when expanded is defined', () => {
@@ -58,16 +84,30 @@ describe('getRows', () => {
 
     expect(rows).toHaveLength(8);
     expect(rows).toEqual([
-      { key: 'memberType', value: 'memberTypeA', path: 'memberTypeA' },
+      { key: 'memberType', value: 'memberTypeA', path: 'memberTypeA', size: 5 },
       undefined,
       undefined,
       undefined,
       undefined,
       undefined,
-      { key: 'memberType', value: 'memberTypeB', path: 'memberTypeB' },
-      { key: 'memberType', value: 'memberTypeC', path: 'memberTypeC' }
+      {
+        key: 'memberType',
+        value: 'memberTypeB',
+        path: 'memberTypeB',
+        size: 20
+      },
+      { key: 'memberType', value: 'memberTypeC', path: 'memberTypeC', size: 30 }
     ]);
-    expect(dataIndex).toEqual({ 0: undefined, 1: 0, 2: 1, 3: 2, 4: 3, 5: 4 });
+    expect(dataIndex).toEqual([
+      'LOADED',
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      'LOADED',
+      'LOADED'
+    ]);
   });
 
   it('should return array of formatted groups when expanded and ids are defined', () => {
@@ -95,8 +135,13 @@ describe('getRows', () => {
 
     expect(rows).toHaveLength(13);
     expect(rows).toEqual([
-      { key: 'memberType', value: 'memberTypeA', path: 'memberTypeA' },
-      { key: 'memberType', value: 'memberTypeB', path: 'memberTypeB' },
+      { key: 'memberType', value: 'memberTypeA', path: 'memberTypeA', size: 5 },
+      {
+        key: 'memberType',
+        value: 'memberTypeB',
+        path: 'memberTypeB',
+        size: 10
+      },
       '5c47e15a48546954e43c4b2c',
       '5c47e15ab5ea0b3e8cf1ff09',
       '5c47e15a56de3d7daa4d0e29',
@@ -107,22 +152,23 @@ describe('getRows', () => {
       undefined,
       undefined,
       undefined,
-      { key: 'memberType', value: 'memberTypeC', path: 'memberTypeC' }
+      { key: 'memberType', value: 'memberTypeC', path: 'memberTypeC', size: 20 }
     ]);
-    expect(dataIndex).toEqual({
-      0: undefined,
-      1: undefined,
-      2: 5,
-      3: 6,
-      4: 7,
-      5: 8,
-      6: 9,
-      7: 10,
-      8: 11,
-      9: 12,
-      10: 13,
-      11: 14
-    });
+    expect(dataIndex).toEqual([
+      'LOADED',
+      'LOADED',
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      'LOADED'
+    ]);
   });
 
   it('should return array of formatted groups with multiple expanded', () => {
@@ -149,17 +195,22 @@ describe('getRows', () => {
       groupBy: ['memberType'],
       expanded: ['memberTypeA', 'memberTypeB']
     };
-    const [rows, dataIndex] = selector.getRows(state, props);
+    const [rows, , dataIndex] = selector.getRows(state, props);
 
     expect(rows).toHaveLength(18);
     expect(rows).toEqual([
-      { key: 'memberType', value: 'memberTypeA', path: 'memberTypeA' },
+      { key: 'memberType', value: 'memberTypeA', path: 'memberTypeA', size: 5 },
       undefined,
       undefined,
       undefined,
       undefined,
       undefined,
-      { key: 'memberType', value: 'memberTypeB', path: 'memberTypeB' },
+      {
+        key: 'memberType',
+        value: 'memberTypeB',
+        path: 'memberTypeB',
+        size: 10
+      },
       '5c47e15a48546954e43c4b2c',
       '5c47e15ab5ea0b3e8cf1ff09',
       '5c47e15a56de3d7daa4d0e29',
@@ -170,7 +221,7 @@ describe('getRows', () => {
       undefined,
       undefined,
       undefined,
-      { key: 'memberType', value: 'memberTypeC', path: 'memberTypeC' }
+      { key: 'memberType', value: 'memberTypeC', path: 'memberTypeC', size: 20 }
     ]);
     expect(dataIndex).toEqual({
       0: undefined,
@@ -203,7 +254,7 @@ describe('getRows', () => {
       datagrid: { members: { byId, ids, totalSize: 10, groups } }
     };
     const props = { groupBy: ['memberType', 'id'], expanded: [] };
-    const [rows, dataIndex] = selector.getRows(state, props);
+    const [rows, , dataIndex] = selector.getRows(state, props);
 
     expect(rows).toHaveLength(1);
     expect(dataIndex).toEqual({});
@@ -213,25 +264,25 @@ describe('getRows', () => {
     const groups = [
       {
         memberType: 'memberTypeA',
-        internalEntity: true,
+        admin: true,
         id: '5c47e15a48546954e43c4b2c',
         size: 1
       },
       {
         memberType: 'memberTypeA',
-        internalEntity: true,
+        admin: true,
         id: '5c47e15ab5ea0b3e8cf1ff09',
         size: 1
       },
       {
         memberType: 'memberTypeB',
-        internalEntity: true,
+        admin: true,
         id: '5c47e15a56de3d7daa4d0e29',
         size: 1
       },
       {
         memberType: 'memberTypeB',
-        internalEntity: true,
+        admin: true,
         id: '5c47e15a9e843e2ae418f237',
         size: 1
       }
@@ -244,16 +295,39 @@ describe('getRows', () => {
       }
     };
     const props = {
-      groupBy: ['memberType', 'internalEntity', 'id'],
+      groupBy: ['memberType', 'admin', 'id'],
       expanded: [
         'memberTypeB',
         'memberTypeB.true',
         'memberTypeB.true.5c47e15a56de3d7daa4d0e29'
       ]
     };
-    const [rows, dataMap, loaded] = selector.getRows(state, props);
+    const [rows, loaded, dataMap] = selector.getRows(state, props);
 
     expect(rows).toHaveLength(6);
+    expect(rows).toEqual([
+      { key: 'memberType', value: 'memberTypeA', path: 'memberTypeA', size: 2 },
+      { key: 'memberType', value: 'memberTypeB', path: 'memberTypeB', size: 2 },
+      {
+        key: 'admin',
+        value: 'true',
+        path: 'memberTypeB.true',
+        size: 2
+      },
+      {
+        key: 'id',
+        value: '5c47e15a56de3d7daa4d0e29',
+        path: 'memberTypeB.true.5c47e15a56de3d7daa4d0e29',
+        size: 1
+      },
+      '5c47e15a56de3d7daa4d0e29',
+      {
+        key: 'id',
+        value: '5c47e15a9e843e2ae418f237',
+        path: 'memberTypeB.true.5c47e15a9e843e2ae418f237',
+        size: 1
+      }
+    ]);
     expect(dataMap).toEqual({ 4: 2 });
     expect(loaded).toEqual([
       'LOADED',
@@ -263,5 +337,14 @@ describe('getRows', () => {
       'LOADING',
       'LOADED'
     ]);
+  });
+});
+
+describe('byId', () => {
+  it('should handle byId', () => {
+    const state = { datagrid: { members: { byId, ids, totalSize: 10 } } };
+    const result = selector.byId(state);
+
+    expect(result).toBe(byId);
   });
 });

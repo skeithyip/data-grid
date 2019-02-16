@@ -5,6 +5,7 @@ import { ScrollSync, AutoSizer } from 'react-virtualized';
 
 import DataGrid from '../DataGrid';
 import DataGridContent from '../DataGridContent';
+import DataGridHeader from '../DataGridHeader';
 
 Enzyme.configure({ adapter: new Adapter() });
 
@@ -12,10 +13,26 @@ const getGridContent = (wrapper, onScroll, width) => {
   const scrollWrapper = wrapper.find(ScrollSync).renderProp('children')({
     onScroll
   });
-  const sizerWrapper = scrollWrapper.find(AutoSizer).renderProp('children')({
-    width
+  const contentWrapper = scrollWrapper
+    .find(AutoSizer)
+    .renderProp('children')({
+      width
+    })
+    .find(DataGridContent);
+  return contentWrapper;
+};
+
+const getGridHeader = (wrapper, scrollLeft, width) => {
+  const scrollWrapper = wrapper.find(ScrollSync).renderProp('children')({
+    scrollLeft
   });
-  return sizerWrapper;
+  const contentWrapper = scrollWrapper
+    .find(AutoSizer)
+    .renderProp('children')({
+      width
+    })
+    .find(DataGridHeader);
+  return contentWrapper;
 };
 
 describe('DataGrid', () => {
@@ -23,18 +40,22 @@ describe('DataGrid', () => {
     const onScroll = jest.fn();
     const props = {
       groupBy: [],
-      columns: ['memberType', 'id', 'name', 'shortname'],
-      columnWidths: { id: 400, name: 200, shortname: 200, memberType: 150 },
+      columns: [
+        { id: 'memberType', width: 150 },
+        { id: 'id', width: 400 },
+        { id: 'name', width: 200 },
+        { id: 'shortname', width: 200 }
+      ],
       onRowClick: jest.fn(),
       rowComponent: () => <React.Fragment />,
       getRows: jest.fn(),
       loadMoreRows: jest.fn()
     };
     const mainWrapper = shallow(<DataGrid {...props} />);
-    const sizerWrapper = getGridContent(mainWrapper, onScroll, 100);
+    const contentWrapper = getGridContent(mainWrapper, onScroll, 100);
 
-    expect(sizerWrapper.is(DataGridContent)).toBeTruthy();
-    expect(sizerWrapper.props()).toMatchObject({
+    expect(contentWrapper.is(DataGridContent)).toBeTruthy();
+    expect(contentWrapper.props()).toMatchObject({
       width: 100,
       columnCount: 4,
       onScroll,
@@ -54,42 +75,117 @@ describe('DataGrid', () => {
     const onScroll = jest.fn();
     const props = {
       groupBy: ['memberType'],
-      columns: ['memberType', 'id', 'name', 'shortname'],
-      columnWidths: { id: 400, name: 200, shortname: 200, memberType: 150 },
+      columns: [
+        { id: 'memberType', width: 150 },
+        { id: 'id', width: 400 },
+        { id: 'name', width: 200 },
+        { id: 'shortname', width: 200 }
+      ],
       onRowClick: jest.fn(),
       rowComponent: () => <React.Fragment />,
       getRows: jest.fn(),
       loadMoreRows: jest.fn()
     };
     const mainWrapper = shallow(<DataGrid {...props} />);
-    let sizerWrapper = getGridContent(mainWrapper, onScroll, 100);
+    let contentWrapper = getGridContent(mainWrapper, onScroll, 100);
 
-    expect(sizerWrapper.props().expanded).toEqual([]);
-    sizerWrapper.simulate('groupRowClick', 'exchange');
-    sizerWrapper = getGridContent(mainWrapper, onScroll, 100);
+    expect(contentWrapper.props().expanded).toEqual([]);
+    contentWrapper.simulate('groupRowClick', 'exchange');
+    contentWrapper = getGridContent(mainWrapper, onScroll, 100);
 
-    expect(sizerWrapper.props().expanded).toEqual(['exchange']);
+    expect(contentWrapper.props().expanded).toEqual(['exchange']);
   });
 
   it('should remove existing expanded when onGroupRowClick', () => {
     const onScroll = jest.fn();
     const props = {
       groupBy: ['memberType'],
-      columns: ['memberType', 'id', 'name', 'shortname'],
-      columnWidths: { id: 400, name: 200, shortname: 200, memberType: 150 },
+      columns: [
+        { id: 'memberType', width: 150 },
+        { id: 'id', width: 400 },
+        { id: 'name', width: 200 },
+        { id: 'shortname', width: 200 }
+      ],
       onRowClick: jest.fn(),
       rowComponent: () => <React.Fragment />,
       getRows: jest.fn(),
       loadMoreRows: jest.fn()
     };
     const mainWrapper = shallow(<DataGrid {...props} />);
-    let sizerWrapper = getGridContent(mainWrapper, onScroll, 100);
+    let contentWrapper = getGridContent(mainWrapper, onScroll, 100);
 
-    expect(sizerWrapper.props().expanded).toEqual([]);
-    sizerWrapper.simulate('groupRowClick', 'exchange');
-    sizerWrapper.simulate('groupRowClick', 'exchange');
-    sizerWrapper = getGridContent(mainWrapper, onScroll, 100);
+    expect(contentWrapper.props().expanded).toEqual([]);
+    contentWrapper.simulate('groupRowClick', 'exchange');
+    contentWrapper.simulate('groupRowClick', 'exchange');
+    contentWrapper = getGridContent(mainWrapper, onScroll, 100);
 
-    expect(sizerWrapper.props().expanded).toEqual([]);
+    expect(contentWrapper.props().expanded).toEqual([]);
+  });
+
+  it('should render DataGridHeader', () => {
+    const scrollLeft = jest.fn();
+    const props = {
+      groupBy: [],
+      columns: [
+        { id: 'memberType', width: 150 },
+        { id: 'id', width: 400 },
+        { id: 'name', width: 200 },
+        { id: 'shortname', width: 200 }
+      ],
+      onRowClick: jest.fn(),
+      rowComponent: () => <React.Fragment />,
+      getRows: jest.fn(),
+      loadMoreRows: jest.fn()
+    };
+    const mainWrapper = shallow(<DataGrid {...props} />);
+    const headerWrapper = getGridHeader(mainWrapper, scrollLeft, 100);
+
+    expect(headerWrapper.is(DataGridHeader)).toBeTruthy();
+    expect(headerWrapper.props()).toMatchObject({
+      height: 40,
+      scrollLeft,
+      width: 100,
+      columns: props.columns,
+      columnCount: 4,
+      rowHeight: 40,
+      totalWidth: 950,
+      columnWidths: expect.any(Object)
+    });
+  });
+
+  it('should handle onResizeColumn', () => {
+    const scrollLeft = jest.fn();
+    const props = {
+      groupBy: [],
+      columns: [
+        { id: 'memberType', width: 100 },
+        { id: 'id', width: 100 },
+        { id: 'name', width: 100 },
+        { id: 'shortname', width: 100 }
+      ],
+      onRowClick: jest.fn(),
+      rowComponent: () => <React.Fragment />,
+      getRows: jest.fn(),
+      loadMoreRows: jest.fn()
+    };
+    const mainWrapper = shallow(<DataGrid {...props} />);
+    let headerWrapper = getGridHeader(mainWrapper, scrollLeft, 100);
+
+    expect(headerWrapper.props().columnWidths).toEqual({
+      memberType: 0.25,
+      id: 0.25,
+      name: 0.25,
+      shortname: 0.25
+    });
+
+    headerWrapper.simulate('resizeColumn', { columnIndex: 0, deltaX: 1 });
+    headerWrapper = getGridHeader(mainWrapper, scrollLeft, 100);
+
+    expect(headerWrapper.props().columnWidths).toEqual({
+      memberType: 0.2525,
+      id: 0.2475,
+      name: 0.25,
+      shortname: 0.25
+    });
   });
 });

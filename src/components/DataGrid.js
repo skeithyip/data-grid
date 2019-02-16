@@ -2,6 +2,8 @@ import React from 'react';
 import { ScrollSync, AutoSizer } from 'react-virtualized';
 // import clsx from 'classnames';
 
+import DataGridHeader from './DataGridHeader';
+
 import 'react-virtualized/styles.css';
 import styles from './ScrollSync.module.css';
 
@@ -10,12 +12,12 @@ import DataGridContent from './DataGridContent';
 class DataGrid extends React.Component {
   constructor(props) {
     super(props);
-    const totalWidth = this.props.columns
-      .map(e => this.props.columnWidths[e])
-      .reduce((acc, e) => acc + e, 0);
-    const columnWidths = this.props.columns.reduce((acc, e) => {
-      const width = this.props.columnWidths[e];
-      acc[e] = width / totalWidth;
+    const totalWidth = this.props.columns.reduce(
+      (acc, { width }) => acc + width,
+      0
+    );
+    const columnWidths = this.props.columns.reduce((acc, { id, width }) => {
+      acc[id] = width / totalWidth;
       return acc;
     }, {});
 
@@ -42,6 +44,23 @@ class DataGrid extends React.Component {
     }
   };
 
+  onResizeColumn = ({ columnIndex, deltaX }) => {
+    const { columns } = this.props;
+    this.setState(({ columnWidths, totalWidth }) => {
+      const { id: column } = columns[columnIndex];
+      const percentDelta = deltaX / totalWidth;
+      const { id: nextDataKey } = columns[columnIndex + 1];
+
+      return {
+        columnWidths: {
+          ...columnWidths,
+          [column]: columnWidths[column] + percentDelta,
+          [nextDataKey]: columnWidths[nextDataKey] - percentDelta
+        }
+      };
+    });
+  };
+
   render() {
     const {
       height,
@@ -58,7 +77,6 @@ class DataGrid extends React.Component {
       onRowClick,
       groupBy,
       getRows,
-      getRowCount,
       loadMoreRows
     } = this.props;
     const columnCount = columns.length;
@@ -66,30 +84,43 @@ class DataGrid extends React.Component {
     return (
       <div className={styles.GridRow}>
         <ScrollSync>
-          {({ onScroll }) => (
+          {({ onScroll, scrollLeft }) => (
             <div className={styles.GridColumn}>
               <AutoSizer disableHeight>
                 {({ width }) => (
-                  <DataGridContent
-                    height={height}
-                    width={width}
-                    columnCount={columnCount}
-                    onScroll={onScroll}
-                    overscanColumnCount={overscanColumnCount}
-                    overscanRowCount={overscanRowCount}
-                    rowHeight={rowHeight}
-                    totalWidth={totalWidth}
-                    columnWidths={columnWidths}
-                    columns={columns}
-                    rowComponent={rowComponent}
-                    onRowClick={onRowClick}
-                    getRows={getRows}
-                    getRowCount={getRowCount}
-                    groupBy={groupBy}
-                    onGroupRowClick={this.onGroupRowClick}
-                    expanded={expanded}
-                    loadMoreRows={loadMoreRows}
-                  />
+                  <div>
+                    <DataGridHeader
+                      height={rowHeight}
+                      scrollLeft={scrollLeft}
+                      onResizeColumn={this.onResizeColumn}
+                      width={width}
+                      columns={columns}
+                      columnCount={columnCount}
+                      rowHeight={rowHeight}
+                      overscanColumnCount={overscanColumnCount}
+                      totalWidth={totalWidth}
+                      columnWidths={columnWidths}
+                    />
+                    <DataGridContent
+                      height={height}
+                      width={width}
+                      columnCount={columnCount}
+                      onScroll={onScroll}
+                      overscanColumnCount={overscanColumnCount}
+                      overscanRowCount={overscanRowCount}
+                      rowHeight={rowHeight}
+                      totalWidth={totalWidth}
+                      columnWidths={columnWidths}
+                      columns={columns}
+                      rowComponent={rowComponent}
+                      onRowClick={onRowClick}
+                      getRows={getRows}
+                      groupBy={groupBy}
+                      onGroupRowClick={this.onGroupRowClick}
+                      expanded={expanded}
+                      loadMoreRows={loadMoreRows}
+                    />
+                  </div>
                 )}
               </AutoSizer>
             </div>

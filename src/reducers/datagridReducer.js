@@ -58,13 +58,15 @@ const fill = (original, startIndex, stopIndex) => {
         continue;
       }
 
+      const memberType = foundGroup
+        ? foundGroup.memberType
+        : sample(['memberTypeA', 'memberTypeB', 'memberTypeC']);
+
       const member = {
         id,
-        name: `member${i + startIndex}`,
+        name: `${memberType}_${i + startIndex}`,
         shortname: `shortname${i + startIndex}`,
-        memberType: foundGroup
-          ? foundGroup.memberType
-          : sample(['memberTypeA', 'memberTypeB', 'memberTypeC'])
+        memberType
       };
 
       draft.members.ids[i + startIndex] = id;

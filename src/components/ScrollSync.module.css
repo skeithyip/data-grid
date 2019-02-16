@@ -28,7 +28,7 @@
   display: block;
 }
 .oddRow {
-  background-color: rgba(0, 0, 0, .1);
+  background-color: rgba(0, 0, 0, 0.1);
 }
 
 .cell,
@@ -40,9 +40,9 @@
   justify-content: center;
   align-items: center;
   text-align: center;
-  padding: 0 .5em;
-  border-top: 1px solid rgba(0,0,0,0.02);
-  border-right: 1px solid rgba(0,0,0,0.02);
+  /*padding: 0 1px;*/
+  border-top: 1px solid rgba(0, 0, 0, 0.02);
+  border-right: 1px solid rgba(0, 0, 0, 0.02);
   background-color: white;
   align-items: flex-start;
 }
@@ -55,19 +55,20 @@
   justify-content: space-between;
   align-items: center;
   text-align: center;
-  padding: 0 .5em;
-  border-top: 1px solid rgba(0,0,0,0.02);
-  border-right: 1px solid rgba(0,0,0,0.02);
+  /*padding: 0 1px;*/
+  border-top: 1px solid rgba(0, 0, 0, 0.02);
+  border-right: 1px solid rgba(0, 0, 0, 0.02);
   background-color: white;
+  font-weight: 700;
 }
 
 .hovered {
-  background-color: rgba(0,0,0,0.03);
+  background-color: rgba(0, 0, 0, 0.03);
 }
 
 .groupHeaderCell {
   align-items: flex-start;
-
+  font-weight: 600;
 }
 
 .collapse {
@@ -104,15 +105,20 @@
 }
 
 @keyframes loading {
-  0% { background-position: -268px 0 }
-  100% { background-position: 268px 0 }
+  0% {
+    background-position: -268px 0;
+  }
+  100% {
+    background-position: 268px 0;
+  }
 }
 
 .placeholder {
   height: 10px;
-  content: "";
+  width: 130px;
+  content: '';
   display: block;
-  background: linear-gradient(to right, #eeeeee 10%, #dddddd 18%, #eeeeee 33%);;
+  background: linear-gradient(to right, #eeeeee 10%, #dddddd 18%, #eeeeee 33%);
   background-size: 400px 54px;
   animation: loading 1.25s linear infinite forwards;
 }
@@ -124,4 +130,8 @@
   padding: 0 25px;
   background-color: #fff;
   border-bottom: 1px solid #e0e0e0;
+}
+
+:focus {
+  outline: none;
 }

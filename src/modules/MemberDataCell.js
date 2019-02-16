@@ -5,7 +5,7 @@ import selector from 'selectors/datagridSelectorImpl';
 
 class MemberDataCell extends React.Component {
   render() {
-    return this.props.value;
+    return this.props.value || null;
   }
 }
 

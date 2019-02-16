@@ -13,7 +13,12 @@ const RowComponent = () => <React.Fragment />;
 describe('DataGridCell', () => {
   it('should render rowComponent', () => {
     const props = {
-      columns: ['memberType', 'id', 'name', 'shortname'],
+      columns: [
+        { id: 'memberType' },
+        { id: 'id' },
+        { id: 'name' },
+        { id: 'shortname' }
+      ],
       row: 'member1',
       columnIndex: 2,
       rowComponent: RowComponent
@@ -28,7 +33,12 @@ describe('DataGridCell', () => {
 
   it('should handle onClick', () => {
     const props = {
-      columns: ['memberType', 'id', 'name', 'shortname'],
+      columns: [
+        { id: 'memberType' },
+        { id: 'id' },
+        { id: 'name' },
+        { id: 'shortname' }
+      ],
       row: 'member1',
       onRowClick: jest.fn(),
       columnIndex: 2,
@@ -43,7 +53,12 @@ describe('DataGridCell', () => {
 
   it('should have hover class when hovered', () => {
     const props = {
-      columns: ['memberType', 'id', 'name', 'shortname'],
+      columns: [
+        { id: 'memberType' },
+        { id: 'id' },
+        { id: 'name' },
+        { id: 'shortname' }
+      ],
       row: 'member1',
       columnIndex: 2,
       rowComponent: RowComponent,
@@ -55,7 +70,12 @@ describe('DataGridCell', () => {
 
   it('should render placeholder only for 1st column when row is not ready', () => {
     const props = {
-      columns: ['memberType', 'id', 'name', 'shortname'],
+      columns: [
+        { id: 'memberType' },
+        { id: 'id' },
+        { id: 'name' },
+        { id: 'shortname' }
+      ],
       row: undefined,
       columnIndex: 0,
       rowComponent: RowComponent
@@ -66,7 +86,12 @@ describe('DataGridCell', () => {
 
   it('should not render placeholder for non-1st column when row is not ready', () => {
     const props = {
-      columns: ['memberType', 'id', 'name', 'shortname'],
+      columns: [
+        { id: 'memberType' },
+        { id: 'id' },
+        { id: 'name' },
+        { id: 'shortname' }
+      ],
       row: undefined,
       columnIndex: 2,
       rowComponent: RowComponent
@@ -77,7 +102,12 @@ describe('DataGridCell', () => {
 
   it('should render DataGridGroupCell for group row', () => {
     const props = {
-      columns: ['memberType', 'id', 'name', 'shortname'],
+      columns: [
+        { id: 'memberType' },
+        { id: 'id' },
+        { id: 'name' },
+        { id: 'shortname' }
+      ],
       columnIndex: 0,
       row: { key: 'memberType', value: 'exchange', path: 'exchange' },
       onGroupRowClick: jest.fn(),
@@ -97,7 +127,12 @@ describe('DataGridCell', () => {
 
   it('should handle mouseOver for group row', () => {
     const props = {
-      columns: ['memberType', 'id', 'name', 'shortname'],
+      columns: [
+        { id: 'memberType' },
+        { id: 'id' },
+        { id: 'name' },
+        { id: 'shortname' }
+      ],
       rowIndex: 10,
       columnIndex: 0,
       row: { key: 'memberType', value: 'exchange', path: 'exchange' },

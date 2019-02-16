@@ -11,10 +11,14 @@ Enzyme.configure({ adapter: new Adapter() });
 
 describe('DataGridContent', () => {
   let resetLoadMoreRowsCache;
+  let forceUpdate;
+  let recomputeGridSize;
   beforeEach(() => {
     resetLoadMoreRowsCache = jest.fn();
+    forceUpdate = jest.fn();
+    recomputeGridSize = jest.fn();
     jest.spyOn(React, 'createRef').mockImplementation(() => ({
-      current: { resetLoadMoreRowsCache }
+      current: { resetLoadMoreRowsCache, forceUpdate, recomputeGridSize }
     }));
   });
 
@@ -145,7 +149,11 @@ describe('DataGridContent', () => {
       rowHeight: 10,
       totalWidth: 400,
       columnWidths: { memberType: 0.5, id: 0.25, name: 0.25 },
-      columns: ['memberType', 'id', 'name']
+      columns: [
+        { id: 'memberType', width: 100 },
+        { id: 'id', width: 50 },
+        { id: 'name', width: 50 }
+      ]
     };
     const wrapper = shallow(<DataGridContent {...props} />);
 
@@ -190,7 +198,6 @@ describe('DataGridContent', () => {
     };
     const wrapper = shallow(<DataGridContent {...props} />);
     wrapper.setProps({ rowCount: 200 });
-    wrapper.setProps({ rowCount: 100 });
 
     expect(resetLoadMoreRowsCache).toHaveBeenCalledTimes(1);
   });
@@ -209,10 +216,12 @@ describe('DataGridContent', () => {
     };
     const wrapper = shallow(<DataGridContent {...props} />);
     wrapper.setProps({ rowCount: 200 });
-    wrapper.instance().loadMoreRows({ startIndex: 0, stopIndex: 199 });
-    wrapper.setProps({ rowCount: 100 });
+    expect(resetLoadMoreRowsCache).toHaveBeenCalledTimes(1);
 
-    expect(resetLoadMoreRowsCache).toHaveBeenCalledTimes(0);
+    wrapper.instance().loadMoreRows({ startIndex: 0, stopIndex: 199 });
+    wrapper.setProps({ rowCount: 200 });
+
+    expect(resetLoadMoreRowsCache).toHaveBeenCalledTimes(1);
   });
 
   it('should not call resetLoadMoreRowsCache when rowCount is not changed', () => {
@@ -231,6 +240,129 @@ describe('DataGridContent', () => {
     wrapper.setProps({ rowCount: 100 });
 
     expect(resetLoadMoreRowsCache).toHaveBeenCalledTimes(0);
+  });
+
+  it('should forceUpdate on hoveredRowIndex change', () => {
+    const props = {
+      rowCount: 100,
+      height: 500,
+      width: 400,
+      columnCount: 5,
+      onScroll: jest.fn(),
+      overscanColumnCount: 15,
+      overscanRowCount: 15,
+      rowHeight: 10,
+      loadMoreRows: jest.fn()
+    };
+    const wrapper = shallow(<DataGridContent {...props} />);
+    expect(forceUpdate).toHaveBeenCalledTimes(0);
+
+    const onRowsRendered = jest.fn();
+    const registerChild = jest.fn();
+    const gridContainer = wrapper.renderProp('children')({
+      onRowsRendered,
+      registerChild
+    });
+
+    const gridWrapper = gridContainer.find(Grid);
+    let cellWrapper = gridWrapper.renderProp('cellRenderer')({
+      columnIndex: 1,
+      key: '1-1',
+      rowIndex: 1,
+      style: {}
+    });
+    expect(cellWrapper.props().hovered).toBeFalsy();
+
+    cellWrapper.simulate('mouseOver', 1);
+
+    expect(forceUpdate).toHaveBeenCalledTimes(1);
+
+    cellWrapper = gridWrapper.renderProp('cellRenderer')({
+      columnIndex: 1,
+      key: '1-1',
+      rowIndex: 1,
+      style: {}
+    });
+
+    expect(cellWrapper.props().hovered).toBeTruthy();
+  });
+
+  it('should handle onMouseOut', () => {
+    const props = {
+      rowCount: 100,
+      height: 500,
+      width: 400,
+      columnCount: 5,
+      onScroll: jest.fn(),
+      overscanColumnCount: 15,
+      overscanRowCount: 15,
+      rowHeight: 10,
+      loadMoreRows: jest.fn()
+    };
+    const wrapper = shallow(<DataGridContent {...props} />);
+    expect(forceUpdate).toHaveBeenCalledTimes(0);
+
+    const onRowsRendered = jest.fn();
+    const registerChild = jest.fn();
+    const gridContainer = wrapper.renderProp('children')({
+      onRowsRendered,
+      registerChild
+    });
+
+    const gridWrapper = gridContainer.find(Grid);
+    let cellWrapper = gridWrapper.renderProp('cellRenderer')({
+      columnIndex: 1,
+      key: '1-1',
+      rowIndex: 1,
+      style: {}
+    });
+    expect(cellWrapper.props().hovered).toBeFalsy();
+
+    cellWrapper.simulate('mouseOver', 1);
+
+    expect(forceUpdate).toHaveBeenCalledTimes(1);
+
+    cellWrapper = gridWrapper.renderProp('cellRenderer')({
+      columnIndex: 1,
+      key: '1-1',
+      rowIndex: 1,
+      style: {}
+    });
+
+    expect(cellWrapper.props().hovered).toBeTruthy();
+
+    gridContainer.simulate('mouseOut');
+
+    cellWrapper = gridWrapper.renderProp('cellRenderer')({
+      columnIndex: 1,
+      key: '1-1',
+      rowIndex: 1,
+      style: {}
+    });
+
+    expect(cellWrapper.props().hovered).toBeFalsy();
+  });
+
+  it('should recomputeGridSize on columnWidths change', () => {
+    const props = {
+      rowCount: 100,
+      height: 500,
+      width: 400,
+      columnCount: 5,
+      onScroll: jest.fn(),
+      overscanColumnCount: 15,
+      overscanRowCount: 15,
+      rowHeight: 10,
+      loadMoreRows: jest.fn(),
+      columnWidths: { memberType: 0.5, id: 0.25, name: 0.25 }
+    };
+    const wrapper = shallow(<DataGridContent {...props} />);
+    expect(recomputeGridSize).toHaveBeenCalledTimes(0);
+
+    wrapper.setProps({
+      columnWidths: { memberType: 0.4, id: 0.35, name: 0.25 }
+    });
+    expect(recomputeGridSize).toHaveBeenCalledTimes(1);
   });
 
   it('should handle renderMainCell', () => {
@@ -290,7 +422,7 @@ describe('DataGridContent', () => {
 describe('Connected', () => {
   it('should assign rowCount and loadedMap as props', () => {
     const loadedMap = ['LOADED', undefined, 'LOADED'];
-    const getRows = jest.fn(() => [['rowA', 'rowB'], undefined, loadedMap]);
+    const getRows = jest.fn(() => [['rowA', 'rowB'], loadedMap]);
     const props = { getRows };
     const store = configureStore()();
     const wrapper = shallow(<Connected store={store} {...props} />);

@@ -3,6 +3,8 @@ import classNames from 'classnames';
 
 import styles from './ScrollSync.module.css';
 
+const padding = { paddingRight: '7px', paddingLeft: '7px' };
+
 class DataGridGroupCell extends React.PureComponent {
   onClick = () => {
     const { onClick, row } = this.props;
@@ -10,7 +12,7 @@ class DataGridGroupCell extends React.PureComponent {
   };
 
   render() {
-    const { style, row, expanded, showCell, hovered } = this.props;
+    const { style, row, expanded, showCell, hovered, onMouseOver } = this.props;
     const divClass = classNames(
       styles.cell,
       styles.groupHeaderCell,
@@ -24,15 +26,18 @@ class DataGridGroupCell extends React.PureComponent {
       expanded ? styles.expanded : styles.collapse
     );
 
+    const rowLabel = `${row.value}`;
+
     return (
-      <div className={divClass} style={style} onClick={this.onClick}>
+      <div
+        className={divClass}
+        style={style}
+        onClick={this.onClick}
+        onMouseOver={onMouseOver}>
         {showCell && (
           <div>
-            <i
-              className={iconClass}
-              style={{ paddingRight: '7px', paddingLeft: '7px' }}
-            />
-            <span>{row.value}</span>
+            <i className={iconClass} style={padding} />
+            <span>{rowLabel}</span>
           </div>
         )}
       </div>
